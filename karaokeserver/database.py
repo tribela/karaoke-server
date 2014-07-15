@@ -5,6 +5,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 
 Base = declarative_base()
 
+
 class Vendor(Base):
     __tablename__ = 'vendors'
     id = Column(Integer, primary_key=True)

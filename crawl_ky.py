@@ -6,11 +6,12 @@ from lxml import html
 indexes = [
     u'ㄱ', u'ㄴ', u'ㄷ', u'ㄹ', u'ㅁ', u'ㅂ', u'ㅅ', u'ㅇ', u'ㅈ', u'ㅊ', u'ㅋ',
     u'ㅌ', u'ㅍ', u'ㅎ',
-    u'0', # Special chars.
+    u'0',  # Special chars.
     u'A', u'B', u'C', u'D', u'E', u'F', u'G', u'H', u'I', u'J', u'K', u'L',
     u'M', u'N', u'O', u'P', u'Q', u'R', u'S', u'T', u'U', u'V', u'W', u'X',
     u'Y', u'Z',
 ]
+
 
 def crawl_data(s_value):
     page = 1
