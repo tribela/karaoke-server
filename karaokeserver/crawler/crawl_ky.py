@@ -29,13 +29,19 @@ def crawl_data(s_value, page):
     req = urllib.request.Request(
         'http://www.ikaraoke.kr/isong/search_index.asp?' + args)
     print(u'Crawling {0}, {1}'.format(s_value, page))
-    with closing(urllib.request.urlopen(req)) as fp:
-        tree = html.fromstring(fp.read())
-        table = tree.xpath('//*[@class="tbl_board"]/table')[0]
-        trs = table.xpath('//tr')[2:]
 
-        if trs:
-            parsing_pipe.put(trs)
+
+    try:
+        with closing(urllib.request.urlopen(req)) as fp:
+            tree = html.fromstring(fp.read())
+            table = tree.xpath('//*[@class="tbl_board"]/table')[0]
+            trs = table.xpath('//tr')[2:]
+
+            if trs:
+                parsing_pipe.put(trs)
+                crawling_pipe.put((s_value, page+1))
+    except urllib.error.HTTPError as e:
+        if e.code == 500:
             crawling_pipe.put((s_value, page+1))
 
 
