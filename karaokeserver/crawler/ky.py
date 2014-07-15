@@ -16,11 +16,7 @@ indexes = [
 ]
 
 
-crawling_pipe = queue.Queue()
-parsing_pipe = queue.Queue()
-
-
-def crawl_data(s_value, page):
+def crawl_data(s_value, page, crawling_pipe, parsing_pipe):
     args = urllib.parse.urlencode({
         'SelType': 2,
         's_value': s_value.encode('euc-kr'),
@@ -56,29 +52,29 @@ def parse_trs(trs):
         except:
             continue
 
-        print(u'{0}, {1}, {2}'.format(number, title, singer))
+        yield (number, title, singer)
 
 
-def parse_worker():
+def parse_worker(parsing_pipe, results):
     while 1:
         trs = parsing_pipe.get()
         running = True
         while running:
             try:
-                parse_trs(trs)
+                results += parse_trs(trs)
                 running = False
             except Exception as e:
                 print(e)
         parsing_pipe.task_done()
 
 
-def crawl_worker():
+def crawl_worker(crawling_pipe, parsing_pipe):
     while 1:
         s_value, page = crawling_pipe.get()
         running = True
         while running:
             try:
-                crawl_data(s_value, page)
+                crawl_data(s_value, page, crawling_pipe, parsing_pipe)
                 running = False
             except Exception as e:
                 print(e)
@@ -86,18 +82,31 @@ def crawl_worker():
 
 
 def crawl():
-    for _ in xrange(2):
-        parsing_thread = threading.Thread(target=parse_worker)
-        parsing_thread.setDaemon(True)
-        parsing_thread.start()
+    parsing_pipe = queue.Queue()
+    crawling_pipe = queue.Queue()
+    results = []
 
     for _ in xrange(10):
-        crawling_thread = threading.Thread(target=crawl_worker)
+        crawling_thread = threading.Thread(
+            target=crawl_worker, args=(crawling_pipe, parsing_pipe))
         crawling_thread.setDaemon(True)
         crawling_thread.start()
+
+    for _ in xrange(2):
+        parsing_thread = threading.Thread(
+            target=parse_worker, args=(parsing_pipe, results))
+        parsing_thread.setDaemon(True)
+        parsing_thread.start()
 
     for index in indexes:
         crawling_pipe.put((index, 1))
 
     crawling_pipe.join()
     parsing_pipe.join()
+
+    return (
+        {
+            'number': number,
+            'title': title,
+            'singer': singer,
+        } for (number, title, singer) in results)
