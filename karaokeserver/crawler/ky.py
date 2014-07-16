@@ -3,42 +3,34 @@ from contextlib import closing
 from six.moves import urllib, queue
 from lxml import html
 from .types import TSong
+import datetime
 import threading
 
 __all__ = 'crawl'
 
-indexes = [
-    u'ㄱ', u'ㄴ', u'ㄷ', u'ㄹ', u'ㅁ', u'ㅂ', u'ㅅ', u'ㅇ', u'ㅈ', u'ㅊ', u'ㅋ',
-    u'ㅌ', u'ㅍ', u'ㅎ',
-    u'0',  # Special chars.
-    u'A', u'B', u'C', u'D', u'E', u'F', u'G', u'H', u'I', u'J', u'K', u'L',
-    u'M', u'N', u'O', u'P', u'Q', u'R', u'S', u'T', u'U', u'V', u'W', u'X',
-    u'Y', u'Z',
-]
-
-
-def crawl_data(s_value, page, crawling_pipe, parsing_pipe):
+def crawl_new(year, month, page, crawling_pipe, parsing_pipe):
+    s_date = '{0:04d}{1:02d}'.format(year, month)
     args = urllib.parse.urlencode({
-        'SelType': 2,
-        's_value': s_value.encode('euc-kr'),
+        's_date': s_date,
         'page': page,
     })
     req = urllib.request.Request(
-        'http://www.ikaraoke.kr/isong/search_index.asp?' + args)
-    print(u'Crawling {0}, {1}'.format(s_value, page))
-
+        'http://ikaraoke.kr/isong/search_newsong.asp?' + args)
+    print(u'Crawling {0}, {1}'.format(s_date, page))
 
     try:
         with closing(urllib.request.urlopen(req)) as fp:
             tree = html.fromstring(fp.read())
-            trs = tree.xpath('//*[@class="tbl_board"]/table[1]//tr')[1:]
+            trs = tree.xpath('//*[@class="tbl_board"]//table[1]//tr')[1:]
+            empty = tree.find('.//*[@class="tbl_board"]//td[@colspan="8"]')
 
-            if trs:
+            if trs and empty is None:
                 parsing_pipe.put(trs)
-                crawling_pipe.put((s_value, page+1))
+                crawling_pipe.put((year, month, page+1))
     except urllib.error.HTTPError as e:
         if e.code == 500:
-            crawling_pipe.put((s_value, page+1))
+            crawling_pipe.put((year, month, page+1))
+
 
 
 def parse_trs(trs):
@@ -70,11 +62,11 @@ def parse_worker(parsing_pipe, results):
 
 def crawl_worker(crawling_pipe, parsing_pipe):
     while 1:
-        s_value, page = crawling_pipe.get()
+        year, month, page = crawling_pipe.get()
         running = True
         while running:
             try:
-                crawl_data(s_value, page, crawling_pipe, parsing_pipe)
+                crawl_new(year, month, page, crawling_pipe, parsing_pipe)
                 running = False
             except Exception as e:
                 print(e)
@@ -98,8 +90,12 @@ def crawl():
         parsing_thread.setDaemon(True)
         parsing_thread.start()
 
-    for index in indexes:
-        crawling_pipe.put((index, 1))
+
+    today = datetime.date.today()
+
+    for year in xrange(2004, today.year+1):
+        for month in xrange(1, 12+1):
+            crawling_pipe.put((year, month, 1))
 
     crawling_pipe.join()
     parsing_pipe.join()
