@@ -21,16 +21,13 @@ def crawl_data(value, page, crawling_pipe, parsing_pipe):
         'http://www.tjmedia.co.kr/tjsong/song_search_list.asp?' + args)
     print(u'Crawling {0}, {1}'.format(value, page))
 
-    try:
-        with closing(urllib.request.urlopen(req)) as fp:
-            tree = html.fromstring(fp.read().decode('utf8', 'replace'))
-            trs = tree.xpath('//*[@id="BoardType1"]/table[1]//tr')
+    with closing(urllib.request.urlopen(req)) as fp:
+        tree = html.fromstring(fp.read().decode('utf8', 'replace'))
+        trs = tree.xpath('//*[@id="BoardType1"]/table[1]//tr')
 
-            if not tree.find('.//*[@id="BoardType1"]/table/td[@colspan="20"]'):
-                parsing_pipe.put(trs)
-                crawling_pipe.put((value, page+1))
-    except urllib.error.HTTPError as e:
-        if e.code == 500:
+        empty = tree.find('.//*[@id="BoardType1"]/table//td[@colspan="20"]')
+        if empty is None:
+            parsing_pipe.put(trs)
             crawling_pipe.put((value, page+1))
 
 
@@ -89,7 +86,7 @@ def crawl():
         parsing_thread.setDaemon(True)
         parsing_thread.start()
 
-    for query in xrange(10):
+    for query in xrange(1, 10):
         crawling_pipe.put((query, 1))
 
     crawling_pipe.join()
