@@ -51,10 +51,15 @@ class DbManager(object):
 
     def add_song(self, song):
         session = self.session()
-        session.add(song)
+        if not session.query(Song).filter_by(
+            vendor=song.vendor, number=song.number).count():
+            session.add(song)
         session.commit()
 
     def add_songs(self, songs):
         session = self.session()
-        session.add_all(songs)
+        for song in songs:
+            if not session.query(Song).filter_by(
+                vendor=song.vendor, number=song.number).count():
+                session.add(song)
         session.commit()
