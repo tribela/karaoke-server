@@ -2,6 +2,7 @@ from contextlib import closing
 from six.moves import urllib
 from six.moves import queue
 from lxml import html
+from .types import TSong
 import threading
 
 __all__ = 'crawl'
@@ -92,9 +93,5 @@ def crawl():
     crawling_pipe.join()
     parsing_pipe.join()
 
-    return (
-        {
-            'number': number,
-            'title': title,
-            'singer': singer,
-        } for (number, title, singer) in results)
+    return set(
+        TSong(number, title, singer) for (number, title, singer) in results)
