@@ -49,6 +49,9 @@ class DbManager(object):
 
         return vendor
 
+    def get_all_vendors(self):
+        return self.session.query(Vendor).all()
+
     def add_song(self, song):
         session = self.session()
         if not session.query(Song).filter_by(
