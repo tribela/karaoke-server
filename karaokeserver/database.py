@@ -2,6 +2,7 @@ from sqlalchemy import Column, Date, ForeignKey, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 import datetime
+import dateutil.parser
 
 
 Base = declarative_base()
@@ -53,6 +54,32 @@ class DbManager(object):
 
     def get_all_vendors(self):
         return self.session.query(Vendor).all()
+
+    def get_songs(self, vendor=None, number=None, title=None, singer=None,
+                  after=None, limit=None):
+        query = self.session.query(Song)
+
+        if vendor:
+            query = query.filter(Song.vendor == vendor)
+
+        if number:
+            query = query.filter(Song.number.like(number + '%'))
+
+        if title:
+            query = query.filter(Song.title.like('%' + title + '%'))
+
+        if singer:
+            query = query.filter(Song.singer.like('%' + singer + '%'))
+
+        if after:
+            if not isinstance(after, datetime.date):
+                after = dateutil.parser.parse(after)
+            query = query.filter(Song.created > after)
+
+        if limit:
+            query = query.limit(limit)
+
+        return query.all()
 
     def add_song(self, song):
         session = self.session()
