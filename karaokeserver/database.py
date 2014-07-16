@@ -1,6 +1,7 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, create_engine
+from sqlalchemy import Column, Date, ForeignKey, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
+import datetime
 
 
 Base = declarative_base()
@@ -22,6 +23,7 @@ class Song(Base):
     title = Column(String(30), nullable=False)
     singer = Column(String(30), nullable=False)
     vendor_id = Column(Integer, ForeignKey('vendors.id'))
+    created = Column(Date, nullable=False, default=datetime.date.today)
     vendor = relationship('Vendor')
 
     def __init__(self, vendor, number, title, singer):
