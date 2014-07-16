@@ -30,8 +30,7 @@ def crawl_data(s_value, page, crawling_pipe, parsing_pipe):
     try:
         with closing(urllib.request.urlopen(req)) as fp:
             tree = html.fromstring(fp.read())
-            table = tree.xpath('//*[@class="tbl_board"]/table')[0]
-            trs = table.xpath('//tr')[2:]
+            trs = tree.xpath('//*[@class="tbl_board"]/table[1]//tr')[1:]
 
             if trs:
                 parsing_pipe.put(trs)
