@@ -58,7 +58,7 @@ class DbManager(object):
 
     def get_songs(self, vendor=None, number=None, title=None, singer=None,
                   after=None, limit=None):
-        query = self.session.query(Song)
+        query = self.session.query(Song).order_by(Song.title)
 
         if vendor:
             query = query.filter(Song.vendor == vendor)
