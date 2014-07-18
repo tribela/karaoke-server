@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Date, ForeignKey, Integer, String, create_engine
+from sqlalchemy import (Column, Date, ForeignKey, Integer, String,
+                        create_engine, func)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 import datetime
@@ -95,3 +96,6 @@ class DbManager(object):
                 vendor=song.vendor, number=song.number).count():
                 session.add(song)
         session.commit()
+
+    def get_last_updated(self):
+        return self.session.query(func.max(Song.created)).one()[0]
