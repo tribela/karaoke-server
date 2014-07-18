@@ -1,6 +1,23 @@
+import datetime
 from flask import Flask, jsonify, render_template, request
+from .database import Song
 
 app = Flask(__name__)
+
+
+def serialize(obj):
+    if isinstance(obj, Song):
+        return {
+            'vendor': obj.vendor.name,
+            'number': obj.number,
+            'title': obj.title,
+            'singer': obj.singer,
+        }
+
+    if isinstance(obj, datetime.date):
+        return obj.strftime('%Y-%m-%d')
+
+    return str(obj)
 
 @app.route('/')
 def index():
@@ -26,17 +43,13 @@ def songs():
         vendor=vendor, title=title, number=number, singer=singer, limit=100)
 
     return jsonify({
-        'songs': [{
-            'vendor': song.vendor.name,
-            'number': song.number,
-            'title': song.title,
-            'singer': song.singer,
-        } for song in songs],
+        'songs': [serialize(song) for song in songs],
     })
+
 
 @app.route('/info')
 def info():
     dbm = app.config['dbm']
     return jsonify({
-        'last_updated': dbm.get_last_updated().strftime('%Y-%m-%d'),
+        'last_updated': serialize(dbm.get_last_updated()),
     })
