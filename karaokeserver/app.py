@@ -33,3 +33,10 @@ def songs():
             'singer': song.singer,
         } for song in songs],
     })
+
+@app.route('/info')
+def info():
+    dbm = app.config['dbm']
+    return jsonify({
+        'last_updated': dbm.get_last_updated().strftime('%Y-%m-%d'),
+    })
