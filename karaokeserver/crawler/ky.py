@@ -8,6 +8,7 @@ import threading
 
 __all__ = 'crawl'
 
+
 def crawl_new(year, month, page, crawling_pipe, parsing_pipe):
     s_date = '{0:04d}{1:02d}'.format(year, month)
     args = urllib.parse.urlencode({
@@ -30,7 +31,6 @@ def crawl_new(year, month, page, crawling_pipe, parsing_pipe):
     except urllib.error.HTTPError as e:
         if e.code == 500:
             crawling_pipe.put((year, month, page+1))
-
 
 
 def parse_trs(trs):
@@ -90,7 +90,6 @@ def crawl():
         parsing_thread.setDaemon(True)
         parsing_thread.start()
 
-
     today = datetime.date.today()
 
     for year in xrange(2004, today.year+1):
@@ -100,4 +99,5 @@ def crawl():
     crawling_pipe.join()
     parsing_pipe.join()
 
-    return (TSong(number, title, singer) for (number, title, singer) in results)
+    return (TSong(number, title, singer)
+            for (number, title, singer) in results)

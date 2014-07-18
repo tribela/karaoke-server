@@ -10,7 +10,6 @@ __all__ = 'crawl'
 PAGESIZE = 1000
 
 
-
 def crawl_data(value, page, crawling_pipe, parsing_pipe):
     args = urllib.parse.urlencode({
         'strType': 16,

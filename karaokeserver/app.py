@@ -19,6 +19,7 @@ def serialize(obj):
 
     return str(obj)
 
+
 @app.route('/')
 def index():
     dbm = app.config['dbm']
@@ -32,7 +33,6 @@ def songs():
     number = request.args.get('number')
     title = request.args.get('title')
     singer = request.args.get('singer')
-
 
     if vendor != 'ALL':
         vendor = dbm.get_vendor(vendor)

@@ -35,7 +35,6 @@ class Song(Base):
         self.singer = singer
 
 
-
 class DbManager(object):
     def __init__(self, url):
         engine = create_engine(url)
@@ -85,7 +84,7 @@ class DbManager(object):
     def add_song(self, song):
         session = self.session()
         if not session.query(Song).filter_by(
-            vendor=song.vendor, number=song.number).count():
+                vendor=song.vendor, number=song.number).count():
             session.add(song)
         session.commit()
 
@@ -93,7 +92,7 @@ class DbManager(object):
         session = self.session()
         for song in songs:
             if not session.query(Song).filter_by(
-                vendor=song.vendor, number=song.number).count():
+                    vendor=song.vendor, number=song.number).count():
                 session.add(song)
         session.commit()
 
