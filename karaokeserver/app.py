@@ -53,3 +53,15 @@ def info():
     return jsonify({
         'last_updated': serialize(dbm.get_last_updated()),
     })
+
+
+@app.route('/get_update/<after>/')
+def get_update(after):
+    dbm = app.config['dbm']
+    songs = dbm.get_songs(after=after)
+    updated = dbm.get_last_updated()
+
+    return jsonify({
+        'songs': [serialize(song) for song in songs],
+        'updated': serialize(updated),
+    })
