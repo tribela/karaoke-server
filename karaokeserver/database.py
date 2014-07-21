@@ -1,5 +1,6 @@
 from sqlalchemy import (Column, Date, ForeignKey, Integer, String,
-                        create_engine, func)
+                        UniqueConstraint, create_engine, func)
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 import datetime
@@ -20,6 +21,9 @@ class Vendor(Base):
 
 class Song(Base):
     __tablename__ = 'songs'
+    __table_args__ = (
+        UniqueConstraint('vendor_id', 'number'),
+    )
     id = Column(Integer, primary_key=True)
     number = Column(String(8), nullable=False)
     title = Column(String(30), nullable=False)
@@ -85,17 +89,21 @@ class DbManager(object):
 
     def add_song(self, song):
         session = self.session()
-        if not session.query(Song).filter_by(
-                vendor=song.vendor, number=song.number).count():
+        try:
             session.add(song)
-        session.commit()
+            session.commit()
+        except IntegrityError:
+            session.rollback()
+            orig_song = session.query(Song).filter_by(
+                vendor=song.vendor, number=song.number).one()
+            orig_song.title = song.title
+            orig_song.singer = song.singer
+            session.commit()
 
     def add_songs(self, songs):
         session = self.session()
         for song in songs:
-            if not session.query(Song).filter_by(
-                    vendor=song.vendor, number=song.number).count():
-                session.add(song)
+            self.add_song(song)
         session.commit()
 
     def get_last_updated(self):
