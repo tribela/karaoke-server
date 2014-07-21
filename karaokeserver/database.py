@@ -89,7 +89,8 @@ class DbManager(object):
     def add_song(self, song):
         session = self.session()
         session.begin(subtransactions=True)
-        orig_song = session.query(Song).filter_by(vendor=song.vendor, number=song.number).first()
+        orig_song = session.query(Song).filter_by(
+            vendor=song.vendor, number=song.number).first()
         if orig_song:
             orig_song.title = song.title
             orig_song.singer = song.singer
