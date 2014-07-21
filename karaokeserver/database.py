@@ -53,11 +53,13 @@ class DbManager(object):
         return vendor
 
     def get_all_vendors(self):
-        return self.session.query(Vendor).all()
+        session = self.session()
+        return session.query(Vendor).all()
 
     def get_songs(self, vendor=None, number=None, title=None, singer=None,
                   after=None, limit=None):
-        query = self.session.query(Song).order_by(Song.title)
+        session = self.session()
+        query = session.query(Song).order_by(Song.title)
 
         if vendor:
             query = query.filter(Song.vendor == vendor)
@@ -97,4 +99,5 @@ class DbManager(object):
         session.commit()
 
     def get_last_updated(self):
-        return self.session.query(func.max(Song.created)).one()[0]
+        session = self.session()
+        return session.query(func.max(Song.created)).one()[0]
