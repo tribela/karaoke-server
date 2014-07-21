@@ -3,6 +3,7 @@ from six.moves import urllib
 from six.moves import queue
 from lxml import html
 from .types import TSong
+import datetime
 import threading
 
 __all__ = 'crawl'
@@ -10,16 +11,14 @@ __all__ = 'crawl'
 PAGESIZE = 1000
 
 
-def crawl_data(value, page, crawling_pipe, parsing_pipe):
+def crawl_data(year, month, parsing_pipe):
     args = urllib.parse.urlencode({
-        'strType': 16,
-        'strText': value,
-        'strSize05': PAGESIZE,
-        'intPage': page,
+        'YY': year,
+        'MM': month,
     })
     req = urllib.request.Request(
-        'http://www.tjmedia.co.kr/tjsong/song_search_list.asp?' + args)
-    print(u'Crawling {0}, {1}'.format(value, page))
+        'http://www.tjmedia.co.kr/tjsong/song_monthNew.asp?' + args)
+    print(u'Crawling {0}-{1}'.format(year, month))
 
     with closing(urllib.request.urlopen(req)) as fp:
         tree = html.fromstring(fp.read().decode('utf8', 'replace'))
@@ -28,7 +27,6 @@ def crawl_data(value, page, crawling_pipe, parsing_pipe):
         empty = tree.find('.//*[@id="BoardType1"]/table//td[@colspan="20"]')
         if empty is None:
             parsing_pipe.put(trs)
-            crawling_pipe.put((value, page+1))
 
 
 def parse_trs(trs):
@@ -58,11 +56,11 @@ def parse_worker(parsing_pipe, results):
 
 def crawl_worker(crawling_pipe, parsing_pipe):
     while 1:
-        s_value, page = crawling_pipe.get()
+        year, month = crawling_pipe.get()
         running = True
         while running:
             try:
-                crawl_data(s_value, page, crawling_pipe, parsing_pipe)
+                crawl_data(year, month, parsing_pipe)
                 running = False
             except Exception as e:
                 print(e)
@@ -86,8 +84,11 @@ def crawl():
         parsing_thread.setDaemon(True)
         parsing_thread.start()
 
-    for query in xrange(1, 10):
-        crawling_pipe.put((query, 1))
+    today = datetime.date.today()
+
+    for year in xrange(2009, today.year + 1):
+        for month in xrange(1, 12 + 1):
+            crawling_pipe.put((year, month))
 
     crawling_pipe.join()
     parsing_pipe.join()
