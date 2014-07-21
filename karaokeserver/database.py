@@ -1,6 +1,5 @@
 from sqlalchemy import (Column, Date, ForeignKey, Integer, String,
                         UniqueConstraint, create_engine, func)
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 import datetime
@@ -89,16 +88,14 @@ class DbManager(object):
 
     def add_song(self, song):
         session = self.session()
-        try:
-            session.add(song)
-            session.commit()
-        except IntegrityError:
-            session.rollback()
-            orig_song = session.query(Song).filter_by(
-                vendor=song.vendor, number=song.number).one()
+        session.begin(subtransactions=True)
+        orig_song = session.query(Song).filter_by(vendor=song.vendor, number=song.number).first()
+        if orig_song:
             orig_song.title = song.title
             orig_song.singer = song.singer
-            session.commit()
+        else:
+            session.add(song)
+        session.commit()
 
     def add_songs(self, songs):
         session = self.session()
