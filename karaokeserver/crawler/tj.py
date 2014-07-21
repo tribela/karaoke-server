@@ -67,7 +67,7 @@ def crawl_worker(crawling_pipe, parsing_pipe):
         crawling_pipe.task_done()
 
 
-def crawl():
+def crawl(new=False):
     parsing_pipe = queue.Queue()
     crawling_pipe = queue.Queue()
     results = []
@@ -86,9 +86,12 @@ def crawl():
 
     today = datetime.date.today()
 
-    for year in xrange(2009, today.year + 1):
-        for month in xrange(1, 12 + 1):
-            crawling_pipe.put((year, month))
+    if new:
+        crawling_pipe.put((today.year, today.month))
+    else:
+        for year in xrange(2009, today.year + 1):
+            for month in xrange(1, 12 + 1):
+                crawling_pipe.put((year, month))
 
     crawling_pipe.join()
     parsing_pipe.join()
