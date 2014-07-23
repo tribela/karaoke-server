@@ -100,9 +100,11 @@ class DbManager(object):
 
     def add_songs(self, songs):
         session = self.session()
+        session.begin(subtransactions=True)
         for song in songs:
             self.add_song(song)
         session.commit()
+        session.close()
 
     def get_last_updated(self):
         session = self.session()
