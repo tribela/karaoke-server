@@ -1,16 +1,16 @@
 from . import ky, tj
-from ..database import Song, DbManager
+from .. import database
 
 
 def crawl(db_url, new=False):
-    manager = DbManager(db_url)
+    session = database.get_session(db_url)
 
-    vendor_ky = manager.get_vendor('KY')
-    songs = (Song(vendor_ky, r.number, r.title, r.singer) for r
+    vendor_ky = database.get_vendor(session, 'KY')
+    songs = (database.Song(vendor_ky, r.number, r.title, r.singer) for r
              in ky.crawl(new))
-    manager.add_songs(songs)
+    database.add_songs(session, songs)
 
-    vendor_tj = manager.get_vendor('TJ')
-    songs = (Song(vendor_tj, r.number, r.title, r.singer) for r
+    vendor_tj = database.get_vendor(session, 'TJ')
+    songs = (database.Song(vendor_tj, r.number, r.title, r.singer) for r
              in tj.crawl(new))
-    manager.add_songs(songs)
+    database.add_songs(session, songs)

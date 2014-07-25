@@ -1,12 +1,12 @@
 import datetime
-from flask import Flask, jsonify, render_template, request
-from .database import Song
+from flask import Flask, g, jsonify, render_template, request
+from . import database
 
 app = Flask(__name__)
 
 
 def serialize(obj):
-    if isinstance(obj, Song):
+    if isinstance(obj, database.Song):
         return {
             'vendor': obj.vendor.name,
             'number': obj.number,
@@ -20,26 +20,41 @@ def serialize(obj):
     return str(obj)
 
 
+@app.before_first_request
+def initialize():
+    database.init_db(app.config['DB_URI'])
+
+
+@app.before_request
+def before_request():
+    g.db_session = database.get_session(app.config['DB_URI'])
+
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    g.db_session.remove()
+
+
 @app.route('/')
 def index():
-    dbm = app.config['dbm']
-    return render_template('index.html', dbm=dbm)
+    vendors = database.get_all_vendors(g.db_session)
+    return render_template('index.html', vendors=vendors)
 
 
 @app.route('/songs/')
 def songs():
-    dbm = app.config['dbm']
     vendor = request.args.get('vendor')
     number = request.args.get('number')
     title = request.args.get('title')
     singer = request.args.get('singer')
 
     if vendor != 'ALL':
-        vendor = dbm.get_vendor(vendor)
+        vendor = database.get_vendor(g.db_session, vendor)
     else:
         vendor = None
 
-    songs = dbm.get_songs(
+    songs = database.get_songs(
+        g.db_session,
         vendor=vendor, title=title, number=number, singer=singer, limit=100)
 
     return jsonify({
@@ -49,17 +64,15 @@ def songs():
 
 @app.route('/info')
 def info():
-    dbm = app.config['dbm']
     return jsonify({
-        'last_updated': serialize(dbm.get_last_updated()),
+        'last_updated': serialize(database.get_last_updated(g.db_session)),
     })
 
 
 @app.route('/get_update/<after>/')
 def get_update(after):
-    dbm = app.config['dbm']
-    songs = dbm.get_songs(after=after)
-    updated = dbm.get_last_updated()
+    songs = database.get_songs(g.db_session, after=after)
+    updated = database.get_last_updated(g.db_session)
 
     return jsonify({
         'songs': [serialize(song) for song in songs],

@@ -1,7 +1,6 @@
 import argparse
 from .app import app
 from .crawler import crawl
-from .database import DbManager
 
 
 def crawl_command(args):
@@ -9,7 +8,7 @@ def crawl_command(args):
 
 
 def server_command(args):
-    app.config['dbm'] = DbManager(args.url)
+    app.config['DB_URI'] = args.url
     app.debug = args.debug
     app.run(host=args.host, port=args.port)
 

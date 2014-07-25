@@ -38,74 +38,76 @@ class Song(Base):
         self.singer = singer
 
 
-class DbManager(object):
-    def __init__(self, url):
+def init_db(url):
+    engine = create_engine(url)
+    session = scoped_session(
+        sessionmaker(engine, autoflush=True, autocommit=False))
+    Base.metadata.create_all(engine)
+    Base.query = session.query_property()
+
+
+def get_session(url):
         engine = create_engine(url)
-        self.session = scoped_session(
+        session = scoped_session(
             sessionmaker(engine, autoflush=True, autocommit=False))
-        Base.metadata.create_all(engine)
+        return session
 
-    def get_vendor(self, name):
-        session = self.session()
-        vendor = session.query(Vendor).filter_by(name=name).first()
-        if not vendor:
-            vendor = Vendor(name)
-            session.add(vendor)
-            session.commit()
 
-        return vendor
-
-    def get_all_vendors(self):
-        session = self.session()
-        return session.query(Vendor).all()
-
-    def get_songs(self, vendor=None, number=None, title=None, singer=None,
-                  after=None, limit=None):
-        session = self.session()
-        query = session.query(Song).order_by(Song.title)
-
-        if vendor:
-            query = query.filter(Song.vendor == vendor)
-
-        if number:
-            query = query.filter(Song.number.like(number + '%'))
-
-        if title:
-            query = query.filter(Song.title.like('%' + title + '%'))
-
-        if singer:
-            query = query.filter(Song.singer.like('%' + singer + '%'))
-
-        if after:
-            if not isinstance(after, datetime.date):
-                after = dateutil.parser.parse(after)
-            query = query.filter(Song.created > after)
-
-        if limit:
-            query = query.limit(limit)
-
-        return query.all()
-
-    def add_song(self, song):
-        session = self.session()
-        session.begin(subtransactions=True)
-        orig_song = session.query(Song).filter_by(
-            vendor=song.vendor, number=song.number).first()
-        if orig_song:
-            orig_song.title = song.title
-            orig_song.singer = song.singer
-        else:
-            session.add(song)
+def get_vendor(session, name):
+    vendor = session.query(Vendor).filter_by(name=name).first()
+    if not vendor:
+        vendor = Vendor(name)
+        session.add(vendor)
         session.commit()
 
-    def add_songs(self, songs):
-        session = self.session()
-        session.begin(subtransactions=True)
-        for song in songs:
-            self.add_song(song)
-        session.commit()
-        session.close()
+    return vendor
 
-    def get_last_updated(self):
-        session = self.session()
-        return session.query(func.max(Song.created)).one()[0]
+def get_all_vendors(session):
+    return session.query(Vendor).all()
+
+def get_songs(session, vendor=None, number=None, title=None, singer=None,
+              after=None, limit=None):
+    query = session.query(Song).order_by(Song.title)
+
+    if vendor:
+        query = query.filter(Song.vendor == vendor)
+
+    if number:
+        query = query.filter(Song.number.like(number + '%'))
+
+    if title:
+        query = query.filter(Song.title.like('%' + title + '%'))
+
+    if singer:
+        query = query.filter(Song.singer.like('%' + singer + '%'))
+
+    if after:
+        if not isinstance(after, datetime.date):
+            after = dateutil.parser.parse(after)
+        query = query.filter(Song.created > after)
+
+    if limit:
+        query = query.limit(limit)
+
+    return query.all()
+
+def add_song(session, song):
+    session.begin(subtransactions=True)
+    orig_song = session.query(Song).filter_by(
+        vendor=song.vendor, number=song.number).first()
+    if orig_song:
+        orig_song.title = song.title
+        orig_song.singer = song.singer
+    else:
+        session.add(song)
+    session.commit()
+
+def add_songs(session, songs):
+    session.begin(subtransactions=True)
+    for song in songs:
+        add_song(session, song)
+    session.commit()
+    session.close()
+
+def get_last_updated(session):
+    return session.query(func.max(Song.created)).one()[0]

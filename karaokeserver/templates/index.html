@@ -11,7 +11,7 @@
         <form action="{{url_for('songs')}}">
             <select name="vendor">
                 <option value="ALL">ALL</option>
-                {% for vendor in dbm.get_all_vendors() %}
+                {% for vendor in vendors %}
                     <option value="{{vendor.name}}">{{vendor.name}}</option>
                 {% endfor %}
             </select>
