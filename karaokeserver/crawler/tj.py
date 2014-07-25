@@ -8,6 +8,8 @@ import threading
 
 __all__ = 'crawl'
 
+VENDOR_NAME = 'TJ'
+
 PAGESIZE = 1000
 
 

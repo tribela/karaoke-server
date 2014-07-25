@@ -8,6 +8,8 @@ import threading
 
 __all__ = 'crawl'
 
+VENDOR_NAME = 'KY'
+
 
 def crawl_new(year, month, page, crawling_pipe, parsing_pipe):
     s_date = '{0:04d}{1:02d}'.format(year, month)
