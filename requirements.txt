@@ -4,3 +4,4 @@ lxml
 six
 sqlalchemy
 gunicorn
+mysql-connector-python
