@@ -62,8 +62,10 @@ def get_vendor(session, name):
 
     return vendor
 
+
 def get_all_vendors(session):
     return session.query(Vendor).all()
+
 
 def get_songs(session, vendor=None, number=None, title=None, singer=None,
               after=None, limit=None):
@@ -91,6 +93,7 @@ def get_songs(session, vendor=None, number=None, title=None, singer=None,
 
     return query.all()
 
+
 def add_song(session, song):
     session.begin(subtransactions=True)
     orig_song = session.query(Song).filter_by(
@@ -102,12 +105,14 @@ def add_song(session, song):
         session.add(song)
     session.commit()
 
+
 def add_songs(session, songs):
     session.begin(subtransactions=True)
     for song in songs:
         add_song(session, song)
     session.commit()
     session.close()
+
 
 def get_last_updated(session):
     return session.query(func.max(Song.created)).one()[0]
