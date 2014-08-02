@@ -1,4 +1,5 @@
 import datetime
+import os
 from flask import Flask, g, jsonify, render_template, request
 from . import database
 
@@ -22,6 +23,7 @@ def serialize(obj):
 
 @app.before_first_request
 def initialize():
+    app.config['DB_URI'] = app.config['DB_URI'] or os.getenv('DATABASE_URL')
     database.init_db(app.config['DB_URI'])
 
 
