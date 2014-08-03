@@ -4,6 +4,7 @@ from .. import database
 
 
 def crawl(db_url, new=False):
+    database.init_db(db_url)
     session = database.get_session(db_url)
 
     vendor_ky = database.get_vendor(session, ky.VENDOR_NAME)
