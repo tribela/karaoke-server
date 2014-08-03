@@ -39,12 +39,26 @@ def parse_trs(trs):
     for tr in trs:
         if not len(tr.find('td')):
             continue
+        for br in tr.xpath("*//br"):
+            br.tail = '\n' + br.tail if br.tail else '\n'
+
         try:
             number = tr.find('td[2]').text_content().strip()
             title = tr.find('td[3]').text_content().strip()
             singer = tr.find('td[4]').text_content().strip()
         except:
             continue
+
+        _title = map(lambda x: x.strip(), title.split('\n'))
+        _singer = map(lambda x: x.strip(), singer.split('\n'))
+
+        # If japanese song
+        if len(_title) > 1:
+            title = _title[0] + _singer[-1]
+            singer = _singer[0] + _title[-1]
+        # Or malformed Korean singer
+        elif len(_singer) > 1:
+            singer = _singer[0]
 
         yield (number, title, singer)
 
