@@ -41,7 +41,7 @@ class Song(Base):
 def init_db(url):
     engine = create_engine(url)
     session = scoped_session(
-        sessionmaker(engine, autoflush=True, autocommit=False))
+        sessionmaker(engine, autoflush=True, autocommit=True))
     Base.metadata.create_all(engine)
     Base.query = session.query_property()
 
@@ -49,7 +49,7 @@ def init_db(url):
 def get_session(url):
         engine = create_engine(url)
         session = scoped_session(
-            sessionmaker(engine, autoflush=True, autocommit=False))
+            sessionmaker(engine, autoflush=True, autocommit=True))
         return session
 
 
