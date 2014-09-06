@@ -69,20 +69,26 @@ def get_all_vendors(session):
 
 
 def get_songs(session, vendor=None, number=None, title=None, singer=None,
-              after=None, limit=None):
+              query_str=None, after=None, limit=None):
     query = session.query(Song).order_by(Song.title)
 
     if vendor:
         query = query.filter(Song.vendor == vendor)
 
-    if number:
-        query = query.filter(Song.number.like(number + '%'))
+    if query_str:
+        query = query.filter(
+            (Song.number == query_str) |
+            Song.title.like('%' + query_str + '%') |
+            Song.singer.like('%' + query_str + '%'))
+    else:
+        if number:
+            query = query.filter(Song.number.like(number + '%'))
 
-    if title:
-        query = query.filter(Song.title.like('%' + title + '%'))
+        if title:
+            query = query.filter(Song.title.like('%' + title + '%'))
 
-    if singer:
-        query = query.filter(Song.singer.like('%' + singer + '%'))
+        if singer:
+            query = query.filter(Song.singer.like('%' + singer + '%'))
 
     if after:
         if not isinstance(after, datetime.date):
