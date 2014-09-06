@@ -3,10 +3,7 @@ function handlerQuery(event) {
   var vendor = target.children('[name=vendor]').val();
   var queryType = target.children('[name=type]').val();
   var val = target.children('[name=query]').val();
-  var data = {};
-
-  data['vendor'] = vendor;
-  data[queryType] = val;
+  var data = target.serialize();
 
   $.ajax({
     method: target.attr('method'),

@@ -47,9 +47,7 @@ def index():
 @app.route('/songs/')
 def songs():
     vendor = request.args.get('vendor')
-    number = request.args.get('number')
-    title = request.args.get('title')
-    singer = request.args.get('singer')
+    query = request.args.get('query')
 
     if vendor != 'ALL':
         vendor = database.get_vendor(g.db_session, vendor)
@@ -58,7 +56,9 @@ def songs():
 
     songs = database.get_songs(
         g.db_session,
-        vendor=vendor, title=title, number=number, singer=singer, limit=100)
+        vendor=vendor,
+        query_str=query,
+        limit=100)
 
     return jsonify({
         'songs': [serialize(song) for song in songs],
