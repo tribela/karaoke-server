@@ -4,7 +4,7 @@ from .crawler import crawl
 
 
 def crawl_command(args):
-    crawl(args.url, new=args.new)
+    crawl(args.url, target=args.target, new=args.new)
 
 
 def server_command(args):
@@ -17,6 +17,8 @@ subparsers = parser.add_subparsers(dest='command')
 
 crawl_parser = subparsers.add_parser('crawl', help='Crawl karaoke database')
 crawl_parser.set_defaults(function=crawl_command)
+crawl_parser.add_argument('-t', '--target', default=None,
+                          help='Target date. example: 2014-11')
 crawl_parser.add_argument('-n', '--new', default=False, action='store_true',
                           help='crawl only new data.')
 crawl_parser.add_argument('url', help='Database url for store karaoke datas')
