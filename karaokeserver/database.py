@@ -1,4 +1,4 @@
-from sqlalchemy import (Column, Date, ForeignKey, Integer, String,
+from sqlalchemy import (Column, DateTime, ForeignKey, Integer, String,
                         UniqueConstraint, create_engine, func)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
@@ -28,7 +28,7 @@ class Song(Base):
     title = Column(String(30), nullable=False)
     singer = Column(String(30), nullable=False)
     vendor_id = Column(Integer, ForeignKey('vendors.id'))
-    created = Column(Date, nullable=False, default=datetime.date.today)
+    created = Column(DateTime, nullable=False, default=datetime.datetime.now)
     vendor = relationship('Vendor')
 
     def __init__(self, vendor, number, title, singer):
@@ -103,6 +103,7 @@ def get_songs(session, vendor=None, number=None, title=None, singer=None,
 
 def add_song(session, song):
     session.begin(subtransactions=True)
+
     orig_song = session.query(Song).filter_by(
         vendor=song.vendor, number=song.number).first()
     if orig_song:
@@ -110,12 +111,15 @@ def add_song(session, song):
         orig_song.singer = song.singer
     else:
         session.add(song)
+
     session.commit()
 
 
 def add_songs(session, songs):
+    now = datetime.datetime.now()
     session.begin(subtransactions=True)
     for song in songs:
+        song.created = now
         add_song(session, song)
     session.commit()
     session.close()

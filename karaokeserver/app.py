@@ -16,7 +16,7 @@ def serialize(obj):
         }
 
     if isinstance(obj, datetime.date):
-        return obj.strftime('%Y-%m-%d')
+        return obj.strftime('%Y-%m-%d %H:%M:%S.%f')
 
     return str(obj)
 
