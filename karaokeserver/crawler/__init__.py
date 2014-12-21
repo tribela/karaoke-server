@@ -1,19 +1,25 @@
+import dateutil.parser
 import itertools
 from . import ky, tj
 from .. import database
 
 
-def crawl(db_url, new=False):
+def crawl(db_url, target=None, new=False):
     database.init_db(db_url)
     session = database.get_session(db_url)
 
+    try:
+        target_month = dateutil.parser.parse(target)
+    except:
+        target_month = None
+
     vendor_ky = database.get_vendor(session, ky.VENDOR_NAME)
     songs_ky = (database.Song(vendor_ky, r.number, r.title, r.singer) for r
-                in ky.crawl(new))
+                in ky.crawl(target_month, new))
 
     vendor_tj = database.get_vendor(session, tj.VENDOR_NAME)
     songs_tj = (database.Song(vendor_tj, r.number, r.title, r.singer) for r
-                in tj.crawl(new))
+                in tj.crawl(target_month, new))
 
     songs = itertools.chain(songs_ky, songs_tj)
     database.add_songs(session, songs)
