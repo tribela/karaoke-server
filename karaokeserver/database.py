@@ -103,6 +103,7 @@ def get_songs(session, vendor=None, number=None, title=None, singer=None,
 
 def add_song(session, song):
     session.begin(subtransactions=True)
+
     orig_song = session.query(Song).filter_by(
         vendor=song.vendor, number=song.number).first()
     if orig_song:
@@ -110,6 +111,7 @@ def add_song(session, song):
         orig_song.singer = song.singer
     else:
         session.add(song)
+
     session.commit()
 
 
