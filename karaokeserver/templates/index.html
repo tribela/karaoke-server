@@ -1,25 +1,72 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <script src="//code.jquery.com/jquery-2.0.0.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="{{url_for('static', filename='master.js')}}" type="text/javascript" charset="utf-8"></script>
-        <title>Index</title>
-    </head>
-    <body>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}" type="text/css" media="all" charset="utf-8">
+
+    <!-- bootstrap cdn -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+    <script src="//code.jquery.com/jquery-2.0.0.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="{{url_for('static', filename='master.js')}}" type="text/javascript" charset="utf-8"></script>
+    <title>Index</title>
+  </head>
+  <body>
+    <header class="page-header">
+      <div class="container">
+        <h1>Karaoke search</h1>
+      </div>
+    </header>
+
+    <div class="container">
+      <div>
         <form action="{{url_for('songs')}}">
-            <select name="vendor">
+          <div class="input-group">
+            <span class="input-group-addon">
+              <select name="vendor">
                 <option value="ALL">ALL</option>
                 {% for vendor in vendors %}
-                    <option value="{{vendor.name}}">{{vendor.name}}</option>
+                <option value="{{vendor.name}}">{{vendor.name}}</option>
                 {% endfor %}
-            </select>
+              </select>
+            </span>
 
-            <input name="query" />
-            <input type="submit" />
+            <input name="query" class="form-control" placeholder="Title, singer, etc." />
+
+            <span class="input-group-btn">
+              <button type="submit" class="btn btn-default">Find</button>
+            </span>
+          </div>
         </form>
-        <div id="result">
-        </div>
-    </body>
+      </div>
+
+      <div id="result">
+        <table class="table table-striped">
+          <tr class="header">
+            <th>Vendor</th>
+            <th>Number</th>
+            <th>Title</th>
+            <th>Singer</th>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+        <a href="https://github.com/kjwon15/karaoke-server">
+          <img alt="Get source code on Github" src="{{url_for('static', filename='img/GitHub-Mark-32px.png')}}" />
+        </a>
+        <a href="https://play.google.com/store/apps/details?id=kai.search.karaokebook">
+          <img alt="Get it on Google Play"
+          src="https://developer.android.com/images/brand/en_generic_rgb_wo_45.png" />
+        </a>
+      </div>
+    </footer>
+
+  </body>
 </html>

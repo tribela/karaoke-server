@@ -11,17 +11,9 @@ function handlerQuery(event) {
     data: data,
   }).success(function(data) {
     var songs = data.songs;
-    var target = $('#result');
-    var table = $('<table></table>');
-    var header = $(['<tr>',
-      '<th>Vendor</th>',
-      '<th>Number</th>',
-      '<th>Title</th>',
-      '<th>Singer</th>',
-      '</tr>'].join(''));
+    var target = $('#result table');
 
-    target.html(null);
-    table.append(header);
+    target.find('tr:not(.header)').remove();
     for (var i=0; i<songs.length; i++) {
       var row = $(['<tr>',
         '<td>' + songs[i].vendor +'</td>',
@@ -29,9 +21,8 @@ function handlerQuery(event) {
         '<td>' + songs[i].title +'</td>',
         '<td>' + songs[i].singer +'</td>',
         '</tr>'].join(''));
-      table.append(row);
+      target.append(row);
     }
-    target.append(table);
 
   });
   event.preventDefault();
