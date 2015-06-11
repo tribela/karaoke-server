@@ -16,7 +16,7 @@ PAGESIZE = 1000
 def crawl_data(year, month, parsing_pipe):
     args = urllib.parse.urlencode({
         'YY': year,
-        'MM': month,
+        'MM': '{0:02d}'.format(month),
     })
     req = urllib.request.Request(
         'http://www.tjmedia.co.kr/tjsong/song_monthNew.asp?' + args)
