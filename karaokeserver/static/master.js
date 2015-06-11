@@ -47,7 +47,23 @@ function handlerPopState(event) {
   }
 }
 
+function initPjax() {
+  var serialized = location.search.substring(1);
+  var target = $('form');
+
+  $.ajax({
+    method: target.attr('method'),
+    url: target.attr('action'),
+    data: serialized,
+  }).success(function(data) {
+    var songs = data.songs;
+    history.replaceState(songs, document.title);
+    printTable(songs);
+  });
+}
+
 $(function() {
   $('form').submit(handlerQuery);
   $(window).on('popstate', handlerPopState);
+  initPjax();
 });
