@@ -23,7 +23,8 @@ def serialize(obj):
 
 @app.before_first_request
 def initialize():
-    app.config['DB_URI'] = app.config['DB_URI'] or os.getenv('DATABASE_URL')
+    app.config['DB_URI'] = app.config.get('DB_URI', None) or \
+            os.getenv('DATABASE_URL')
     database.init_db(app.config['DB_URI'])
 
 
