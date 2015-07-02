@@ -76,19 +76,24 @@ def get_songs(session, vendor=None, number=None, title=None, singer=None,
         query = query.filter(Song.vendor == vendor)
 
     if query_str:
+        query_str = query_str.replace('_', '\_').replace('%', '\%')
         query = query.filter(
             (Song.number == query_str) |
-            Song.title.like('%' + query_str + '%') |
-            Song.singer.like('%' + query_str + '%'))
+            Song.title.like('%' + query_str + '%', escape='\\') |
+            Song.singer.like('%' + query_str + '%', escape='\\'))
     else:
         if number:
-            query = query.filter(Song.number.like(number + '%'))
+            query = query.filter(Song.number == number)
 
         if title:
-            query = query.filter(Song.title.like('%' + title + '%'))
+            title = title.replace('_', '\_').replace('%', '\%')
+            query = query.filter(
+                Song.title.like('%' + title + '%', escape='\\'))
 
         if singer:
-            query = query.filter(Song.singer.like('%' + singer + '%'))
+            singer = singer.replace('_', '\_').replace('%', '\%')
+            query = query.filter(
+                Song.singer.like('%' + singer + '%', escape='\\'))
 
     if after:
         if not isinstance(after, datetime.date):
