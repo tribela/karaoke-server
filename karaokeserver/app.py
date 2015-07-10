@@ -77,10 +77,7 @@ def get_update(after):
     songs = database.get_songs(g.db_session, after=after)
     updated = database.get_last_updated(g.db_session)
 
-    resp = jsonify({
+    return jsonify({
         'songs': [serialize(song) for song in songs],
         'updated': serialize(updated),
     })
-
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
