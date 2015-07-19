@@ -1,8 +1,9 @@
-python-dateutil
 flask
+gunicorn
 lxml
+mysql-connector-python
+psycopg2
+python-dateutil
+schedule
 six
 sqlalchemy
-gunicorn
-mysql-connector-python
-schedule
