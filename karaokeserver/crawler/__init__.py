@@ -25,7 +25,7 @@ def crawl(db_url, target=None, new=False):
     database.add_songs(session, songs)
 
 
-def crawl_anisongs(db_url):
+def crawl_special_indices(db_url):
     database.init_db(db_url)
     session = database.get_session(db_url)
     anisongs = anisong.crawl()

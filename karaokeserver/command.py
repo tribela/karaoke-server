@@ -1,10 +1,12 @@
 import argparse
 from .app import app
-from .crawler import crawl
+from .crawler import crawl, crawl_special_indices
 
 
 def crawl_command(args):
     crawl(args.url, target=args.target, new=args.new)
+    if args.special:
+        crawl_special_indices(args.url)
 
 
 def server_command(args):
@@ -21,6 +23,8 @@ crawl_parser.add_argument('-t', '--target', default=None,
                           help='Target date. example: 2014-11')
 crawl_parser.add_argument('-n', '--new', default=False, action='store_true',
                           help='crawl only new data.')
+crawl_parser.add_argument('-s', '--special', default=False,
+                          action='store_true', help='Crawl special indices.')
 crawl_parser.add_argument('url', help='Database url for store karaoke datas')
 
 server_parser = subparsers.add_parser('server', help='query server')
