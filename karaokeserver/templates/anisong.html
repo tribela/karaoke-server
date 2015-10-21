@@ -13,7 +13,7 @@
   <tr class="table-divider header">
     <th colspan="3">{{ division }}</th>
   </tr>
-  {% for song in songs[division] %}
+  {% for song in songs[division]|sort(attribute='title') %}
   <tr>
     <td>{{ song.title }}</td>
     <td>{{ song.number_tj or '' }}</td>
