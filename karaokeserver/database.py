@@ -1,4 +1,4 @@
-from sqlalchemy import (Column, DateTime, ForeignKey, Integer, String,
+from sqlalchemy import (Column, DateTime, ForeignKey, Integer, String, Text,
                         UniqueConstraint, create_engine, func)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
@@ -24,9 +24,9 @@ class Song(Base):
         UniqueConstraint('vendor_id', 'number'),
     )
     id = Column(Integer, primary_key=True)
-    number = Column(String(8), nullable=False)
-    title = Column(String(30), nullable=False)
-    singer = Column(String(30), nullable=False)
+    number = Column(Integer, nullable=False)
+    title = Column(Text, nullable=False)
+    singer = Column(Text, nullable=False)
     vendor_id = Column(Integer, ForeignKey('vendors.id'))
     created = Column(DateTime, nullable=False, default=datetime.datetime.now)
     vendor = relationship('Vendor')
@@ -44,8 +44,8 @@ class SpecialIndex(Base):
          UniqueConstraint('division', 'title'),
     )
     id = Column(Integer, primary_key=True)
-    division = Column(String(100), nullable=False)
-    title = Column(String(100), nullable=False)
+    division = Column(Text, nullable=False)
+    title = Column(Text, nullable=False)
     number_tj = Column(Integer)
     number_ky = Column(Integer)
 
