@@ -38,6 +38,24 @@ class Song(Base):
         self.singer = singer
 
 
+class SpecialIndex(Base):
+    __tablename__ = 'special_songs'
+    __table_args__ = (
+         UniqueConstraint('division', 'title'),
+    )
+    id = Column(Integer, primary_key=True)
+    division = Column(String(100), nullable=False)
+    title = Column(String(100), nullable=False)
+    number_tj = Column(Integer)
+    number_ky = Column(Integer)
+
+    def __init__(self, division, title, number_tj, number_ky):
+        self.division = division
+        self.title = title
+        self.number_tj = number_tj
+        self.number_ky = number_ky
+
+
 def init_db(url):
     engine = create_engine(url)
     session = scoped_session(

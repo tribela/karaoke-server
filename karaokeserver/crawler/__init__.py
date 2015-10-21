@@ -1,6 +1,6 @@
 import dateutil.parser
 import itertools
-from . import ky, tj
+from . import anisong, ky, tj
 from .. import database
 
 
@@ -23,3 +23,23 @@ def crawl(db_url, target=None, new=False):
 
     songs = itertools.chain(songs_ky, songs_tj)
     database.add_songs(session, songs)
+
+
+def crawl_anisongs(db_url):
+    database.init_db(db_url)
+    session = database.get_session(db_url)
+    anisongs = anisong.crawl()
+
+    session.begin()
+    for song in anisongs:
+        orig_song = session.query(database.SpecialIndex).filter_by(
+            division=song.division,
+            title=song.title
+        ).first()
+        if orig_song:
+            orig_song.number_tj = song.number_tj
+            orig_song.number_ky = song.number_ky
+        else:
+            session.add(song)
+
+    session.commit()
