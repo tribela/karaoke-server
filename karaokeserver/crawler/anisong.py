@@ -20,20 +20,23 @@ GAME_URL = ('https://namu.wiki/w/'
             '%EA%B2%8C%EC%9E%84%20%EC%9D%8C%EC%95%85/'
             '%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB'
             '%A1%9D')
+pattern_number = re.compile(r'\d+')
 
 
 def crawl_anisong():
     def parse_table(table):
         division = None
+        for br in table.xpath("*//br"):
+            br.tail = "\n" + br.tail if br.tail else "\n"
         for tr in table.findall('tr')[1:]:
             if tr.find('td').get('colspan'):
                 division = tr.find('td').text_content()
             else:
-                tj = tr.find('td[1]').text_content()
-                ky = tr.find('td[2]').text_content().replace('(F)', '')
+                tj = pattern_number.match(tr.find('td[1]').text_content())
+                ky = pattern_number.match(tr.find('td[2]').text_content())
 
-                tj_num = tj if tj != 'XXX' else None
-                ky_num = ky if ky != 'XXX' else None
+                tj_num = int(tj.group()) if tj else None
+                ky_num = int(ky.group()) if ky else None
 
                 title = tr.find('td[3]').text_content()
 
@@ -51,12 +54,12 @@ def crawl_vocaloid_songs():
     def parse_table(table):
         division = 'Vocaloid'
         for tr in table.findall('tr')[1:]:
-            tj = tr.find('td[1]').text_content()
-            ky = tr.find('td[2]').text_content()
+            tj = pattern_number.match(tr.find('td[1]').text_content())
+            ky = pattern_number.match(tr.find('td[2]').text_content())
             title = tr.find('td[3]').text_content()
 
-            tj_num = tj if tj != 'XXX' else None
-            ky_num = ky if ky != 'XXX' else None
+            tj_num = int(tj.group()) if tj else None
+            ky_num = int(ky.group()) if ky else None
 
             yield SpecialIndex(division, title, tj_num, ky_num)
 
@@ -68,13 +71,14 @@ def crawl_vocaloid_songs():
 def crawl_game_songs():
     def parse_table(table):
         for tr in table.findall('tr')[1:]:
-            tj = tr.find('td[1]').text_content()
-            ky = tr.find('td[2]').text_content()
+            tj = pattern_number.match(tr.find('td[1]').text_content())
+            ky = pattern_number.match(tr.find('td[2]').text_content())
             title = tr.find('td[3]').text_content()
             division = tr.find('td[5]').text_content()
 
-            tj_num = tj if tj != 'XXX' else None
-            ky_num = ky if ky != 'XXX' else None
+
+            tj_num = int(tj.group()) if tj else None
+            ky_num = int(ky.group()) if ky else None
 
             division = clean_division(division)
 
