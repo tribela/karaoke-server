@@ -100,13 +100,13 @@ def get_songs(session, vendor=None, number=None, title=None, singer=None,
             number = int(query_str)
             query = query.filter(or_(
                 (Song.number == number),
-                Song.title.like('%' + query_str + '%', escape='\\'),
-                Song.singer.like('%' + query_str + '%', escape='\\')
+                Song.title.ilike('%' + query_str + '%', escape='\\'),
+                Song.singer.ilike('%' + query_str + '%', escape='\\')
             ))
         except ValueError:
             query = query.filter(or_(
-                Song.title.like('%' + query_str + '%', escape='\\'),
-                Song.singer.like('%' + query_str + '%', escape='\\')
+                Song.title.ilike('%' + query_str + '%', escape='\\'),
+                Song.singer.ilike('%' + query_str + '%', escape='\\')
             ))
     else:
         if number:
@@ -115,12 +115,12 @@ def get_songs(session, vendor=None, number=None, title=None, singer=None,
         if title:
             title = title.replace('_', '\_').replace('%', '\%')
             query = query.filter(
-                Song.title.like('%' + title + '%', escape='\\'))
+                Song.title.ilike('%' + title + '%', escape='\\'))
 
         if singer:
             singer = singer.replace('_', '\_').replace('%', '\%')
             query = query.filter(
-                Song.singer.like('%' + singer + '%', escape='\\'))
+                Song.singer.ilike('%' + singer + '%', escape='\\'))
 
     if after:
         if not isinstance(after, datetime.date):
