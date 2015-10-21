@@ -53,7 +53,7 @@ def index():
     return render_template('index.html', vendors=vendors)
 
 
-@app.route('/songs/')
+@app.route('/query_songs/')
 def songs():
     vendor = request.args.get('vendor')
     query = request.args.get('query')
