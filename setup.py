@@ -17,7 +17,14 @@ def readfile(filename):
         return ''
 
 
-install_reqs = [str(ir.req) for ir in parse_requirements('requirements.txt')]
+install_reqs = [
+    'Flask>=0.10.1',
+    'SQLAlchemy>=0.9.7',
+    'lxml>=3.3.5',
+    'python-dateutil>=2.2',
+    'requests>=2.8.1',
+    'six>=1.7.3',
+]
 
 
 setup(

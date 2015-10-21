@@ -1,9 +1,5 @@
-flask
 gunicorn
-lxml
 mysql-connector-python
 psycopg2
-python-dateutil
 schedule
-six
-sqlalchemy
+.
