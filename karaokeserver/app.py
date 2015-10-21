@@ -1,5 +1,6 @@
 import datetime
 import os
+from collections import defaultdict
 from flask import Flask, g, jsonify, render_template, request
 from . import database
 
@@ -19,6 +20,14 @@ def serialize(obj):
         return obj.strftime('%Y-%m-%d %H:%M:%S.%f')
 
     return str(obj)
+
+
+def serialize_anime_song(song):
+    return {
+        'title': song.title,
+        'tj': song.number_tj,
+        'ky': song.number_ky,
+    }
 
 
 @app.before_first_request
@@ -63,6 +72,17 @@ def songs():
     return jsonify({
         'songs': [serialize(song) for song in songs],
     })
+
+
+@app.route('/special_songs/', methods=['GET'])
+def animation_songs():
+    songs = g.db_session.query(database.SpecialIndex).all()
+    dic = defaultdict(list)
+
+    for song in songs:
+        dic[song.division].append(serialize_anime_song(song))
+
+    return jsonify(dic)
 
 
 @app.route('/info')
