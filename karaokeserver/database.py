@@ -2,6 +2,7 @@ from sqlalchemy import (Column, DateTime, ForeignKey, Integer, String, Text,
                         UniqueConstraint, create_engine, func)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
+from sqlalchemy.sql import or_
 import datetime
 import dateutil.parser
 
@@ -95,10 +96,18 @@ def get_songs(session, vendor=None, number=None, title=None, singer=None,
 
     if query_str:
         query_str = query_str.replace('_', '\_').replace('%', '\%')
-        query = query.filter(
-            (Song.number == query_str) |
-            Song.title.like('%' + query_str + '%', escape='\\') |
-            Song.singer.like('%' + query_str + '%', escape='\\'))
+        try:
+            number = int(query_str)
+            query = query.filter(or_(
+                (Song.number == number),
+                Song.title.like('%' + query_str + '%', escape='\\'),
+                Song.singer.like('%' + query_str + '%', escape='\\')
+            ))
+        except ValueError:
+            query = query.filter(or_(
+                Song.title.like('%' + query_str + '%', escape='\\'),
+                Song.singer.like('%' + query_str + '%', escape='\\')
+            ))
     else:
         if number:
             query = query.filter(Song.number == number)
