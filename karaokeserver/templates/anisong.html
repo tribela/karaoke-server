@@ -1,0 +1,25 @@
+{% extends 'template.html' %}
+{% block title %}Animation songs{% endblock %}
+{% block page_title %}Animation songs{% endblock %}
+{% block body %}
+<table class="table table-striped">
+  <tr class="header">
+    <th>Title</th>
+    <th>TJ</th>
+    <th>KY</th>
+  </tr>
+  {% for division in songs|sort %}
+  <tr class="table-divider header">
+    <th colspan="3">{{ division }}</th>
+  </tr>
+  {% for song in songs[division] %}
+  <tr>
+    <td>{{ song.title }}</td>
+    <td>{{ song.number_tj or '' }}</td>
+    <td>{{ song.number_ky or '' }}</td>
+  </tr>
+  {% endfor %}
+  {% endfor %}
+
+</table>
+{% endblock %}

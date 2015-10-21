@@ -74,8 +74,22 @@ def songs():
     })
 
 
-@app.route('/special_songs/', methods=['GET'])
+@app.route('/anisongs/', methods=['GET'])
 def animation_songs():
+    songs = g.db_session.query(database.SpecialIndex).order_by(
+        database.SpecialIndex.division).all()
+    dic = defaultdict(list)
+
+    for song in songs:
+        dic[song.division].append(song)
+
+    return render_template('anisong.html', songs=dic)
+
+
+
+
+@app.route('/special_songs/', methods=['GET'])
+def special_songs():
     songs = g.db_session.query(database.SpecialIndex).all()
     dic = defaultdict(list)
 

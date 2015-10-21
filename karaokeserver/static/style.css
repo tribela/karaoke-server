@@ -7,3 +7,9 @@ body > footer {
 footer.footer a {
     display: inline-block;
 }
+
+.table-divider > th {
+    background: green;
+    color: white;
+    text-align: center;
+}
