@@ -23,10 +23,10 @@ function printTable(songs) {
     target.find('tr:not(.header)').remove();
     for (var i=0; i<songs.length; i++) {
       var row = $(['<tr>',
-        '<td>' + songs[i].vendor +'</td>',
+        '<td class="mdl-data-table__cell--non-numeric">' + songs[i].vendor +'</td>',
         '<td>' + songs[i].number +'</td>',
-        '<td>' + songs[i].title +'</td>',
-        '<td>' + songs[i].singer +'</td>',
+        '<td class="mdl-data-table__cell--non-numeric">' + songs[i].title +'</td>',
+        '<td class="mdl-data-table__cell--non-numeric">' + songs[i].singer +'</td>',
         '</tr>'].join(''));
       target.append(row);
     }

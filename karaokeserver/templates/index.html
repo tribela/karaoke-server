@@ -5,32 +5,29 @@
 {% block body %}
 <div>
   <form action="{{url_for('songs')}}">
-    <div class="input-group">
-      <span class="input-group-addon">
-        <select name="vendor">
-          <option value="ALL">ALL</option>
-          {% for vendor in vendors %}
-          <option value="{{vendor.name}}">{{vendor.name}}</option>
-          {% endfor %}
-        </select>
-      </span>
+    <select name="vendor">
+      <option value="ALL">ALL</option>
+      {% for vendor in vendors %}
+      <option value="{{vendor.name}}">{{vendor.name}}</option>
+      {% endfor %}
+    </select>
 
-      <input name="query" class="form-control" placeholder="Title, singer, etc." />
-
-      <span class="input-group-btn">
-        <button type="submit" class="btn btn-default">Find</button>
-      </span>
+    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+      <input name="query" id="query" class="mdl-textfield__input">
+      <label class="mdl-textfield__label" for="query">Title, singer, etc.</label>
     </div>
+
+    <button type="submit" class="mdl-button material-icons">search</button>
   </form>
 </div>
 
 <div id="result">
-  <table class="table table-striped">
+  <table class="full-table mdl-data-table">
     <tr class="header">
-      <th>Vendor</th>
-      <th>Number</th>
-      <th>Title</th>
-      <th>Singer</th>
+      <th class="mdl-data-table__cell--non-numeric">Vendor</th>
+      <th class="mdl-data-table__cell--non-numeric">Number</th>
+      <th class="mdl-data-table__cell--non-numeric">Title</th>
+      <th class="mdl-data-table__cell--non-numeric">Singer</th>
     </tr>
   </table>
 </div>

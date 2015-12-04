@@ -5,7 +5,10 @@ main {
     margin-right: auto;
 }
 
+table.full-table {
+    width: 100%;
 }
+
 footer a {
     display: inline-block;
 }
