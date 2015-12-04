@@ -10,54 +10,62 @@
 
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}" type="text/css" media="all" charset="utf-8">
 
-    <!-- bootstrap cdn -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <!-- Material design lite cdn -->
+    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.blue_grey-indigo.min.css">
+    <script src="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <script src="//code.jquery.com/jquery-2.0.0.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="{{url_for('static', filename='master.js')}}" type="text/javascript" charset="utf-8"></script>
     <title>{% block title %}{% endblock %}</title>
   </head>
   <body>
-    <nav class="navbar navbar-default">
-      <div class="container">
-        <ul class="nav navbar-nav">
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+      <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+          <!-- Title -->
+          <span class="mdl-layout-title">{% block page_title %}{% endblock %}</span>
+          <!-- Add spacer, to align navigation to the right -->
+          <div class="mdl-layout-spacer"></div>
+          <!-- Navigation. We hide it in small screens. -->
+          <nav class="mdl-navigation mdl-layout--large-screen-only">
+            {% for id, caption in navigation_bar %}
+            <a class="mdl-navigation__link" href="{{ url_for(id) }}">{{ caption }}</a>
+            {% endfor %}
+          </nav>
+        </div>
+      </header>
+      <div class="mdl-layout__drawer">
+        <span class="mdl-layout-title">Menu</span>
+        <nav class="mdl-navigation">
           {% for id, caption in navigation_bar %}
-          <li {% if id == active_page %}class="active"{% endif %}>
-            <a href="{{ url_for(id) }}">{{ caption }}</a>
-          </li>
+          <a class="mdl-navigation__link" href="{{ url_for(id) }}">{{ caption }}</a>
           {% endfor %}
-        </ul>
+        </nav>
       </div>
-    </nav>
-
-    <header class="page-header">
-      <div class="container">
-        <h1>{% block page_title %}{% endblock %}</h1>
+      <main class="mdl-layout__content">
+      <div class="page-content">
+        {% block body %}{% endblock %}
+        {% include 'google-adsense.html' ignore missing with context %}
       </div>
-    </header>
+      </main>
 
-    <div class="container">
-      {% block body %}{% endblock %}
-      {% include 'google-adsense.html' ignore missing with context %}
+      <footer class="mdl-mini-footer">
+        <main>
+          <a href="https://github.com/kjwon15/karaoke-server">
+            <img alt="Get source code on Github" src="{{url_for('static', filename='img/GitHub-Mark-32px.png')}}" />
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=kai.search.karaokebook">
+            <img alt="Get it on Google Play"
+            src="https://developer.android.com/images/brand/en_generic_rgb_wo_45.png" />
+          </a>
+          <a href="https://www.windowsphone.com/s?appId=ff0c39b0-875f-4c9f-83c1-0bda99f3c668">
+            <img alt="Get it on Windows store"
+            src="{{url_for('static', filename='img/154x40_WPS_Download_blk.png')}}" />
+          </a>
+        </main>
+      </footer>
     </div>
-
-    <footer class="footer">
-      <div class="container">
-        <a href="https://github.com/kjwon15/karaoke-server">
-          <img alt="Get source code on Github" src="{{url_for('static', filename='img/GitHub-Mark-32px.png')}}" />
-        </a>
-        <a href="https://play.google.com/store/apps/details?id=kai.search.karaokebook">
-          <img alt="Get it on Google Play"
-          src="https://developer.android.com/images/brand/en_generic_rgb_wo_45.png" />
-        </a>
-        <a href="https://www.windowsphone.com/s?appId=ff0c39b0-875f-4c9f-83c1-0bda99f3c668">
-          <img alt="Get it on Windows store"
-          src="{{url_for('static', filename='img/154x40_WPS_Download_blk.png')}}" />
-        </a>
-      </div>
-    </footer>
 
     {% include 'google-analytics.html' ignore missing with context %}
   </body>
