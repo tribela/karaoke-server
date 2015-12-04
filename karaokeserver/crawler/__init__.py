@@ -13,11 +13,11 @@ def crawl(db_url, target=None, new=False):
     except:
         target_month = None
 
-    vendor_ky = database.get_vendor(session, ky.VENDOR_NAME)
+    vendor_ky = database.get_vendor(session, ky.VENDOR_NAME, create=True)
     songs_ky = (database.Song(vendor_ky, r.number, r.title, r.singer) for r
                 in ky.crawl(target_month, new))
 
-    vendor_tj = database.get_vendor(session, tj.VENDOR_NAME)
+    vendor_tj = database.get_vendor(session, tj.VENDOR_NAME, create=True)
     songs_tj = (database.Song(vendor_tj, r.number, r.title, r.singer) for r
                 in tj.crawl(target_month, new))
 
