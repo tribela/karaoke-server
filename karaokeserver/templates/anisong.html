@@ -4,22 +4,26 @@
 {% block page_title %}Animation songs{% endblock %}
 {% block body %}
 <table class="full-table mdl-data-table">
-  <tr>
-    <th class="mdl-data-table__cell--non-numeric">Title</th>
-    <th class="mdl-data-table__cell--non-numeric">TJ</th>
-    <th class="mdl-data-table__cell--non-numeric">KY</th>
-  </tr>
+  <thead>
+    <tr>
+      <th class="mdl-data-table__cell--non-numeric">Title</th>
+      <th>TJ</th>
+      <th>KY</th>
+    </tr>
+  </thead>
   {% for division in songs|sort %}
-  <tr class="table-divider">
-    <th class="mdl-data-table__cell--non-numeric" colspan="3">{{ division }}</th>
-  </tr>
-  {% for song in songs[division]|sort(attribute='title') %}
-  <tr>
-    <td class="mdl-data-table__cell--non-numeric">{{ song.title }}</td>
-    <td>{{ song.number_tj or '' }}</td>
-    <td>{{ song.number_ky or '' }}</td>
-  </tr>
-  {% endfor %}
+  <tbody>
+    <tr class="table-divider">
+      <th class="mdl-data-table__cell--non-numeric" colspan="3">{{ division }}</th>
+    </tr>
+    {% for song in songs[division]|sort(attribute='title') %}
+    <tr style="display: none;">
+      <td class="mdl-data-table__cell--non-numeric">{{ song.title }}</td>
+      <td>{{ song.number_tj or '' }}</td>
+      <td>{{ song.number_ky or '' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
   {% endfor %}
 
 </table>

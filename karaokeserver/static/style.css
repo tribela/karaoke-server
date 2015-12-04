@@ -14,7 +14,14 @@ footer a {
 }
 
 .table-divider > th {
-    background: green;
     color: white;
     text-align: center;
+}
+
+tbody:nth-of-type(even) .table-divider {
+    background: rgb(255,193,7);
+}
+
+tbody:nth-of-type(odd) .table-divider {
+    background: rgb(255,152,0);
 }

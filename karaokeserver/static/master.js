@@ -38,6 +38,10 @@ function clearTable() {
   target.find('tr:not(.header)').remove();
 }
 
+function handlerTableFold() {
+   $(this).siblings('tr:not(.table-divider)').toggle();
+}
+
 function handlerPopState(event) {
   var songs = event.originalEvent.state;
   if (songs !== null) {
@@ -65,5 +69,6 @@ function initPjax() {
 $(function() {
   $('form').submit(handlerQuery);
   $(window).on('popstate', handlerPopState);
+  $(document.body).on('click', 'tr.table-divider', handlerTableFold);
   initPjax();
 });
