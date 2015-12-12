@@ -55,6 +55,10 @@ function initPjax() {
   var serialized = location.search.substring(1);
   var target = $('form');
 
+  if (serialized === "") {
+    return;
+  }
+
   $.ajax({
     method: target.attr('method'),
     url: target.attr('action'),
