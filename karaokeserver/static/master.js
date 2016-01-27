@@ -13,6 +13,12 @@ function handlerQuery(event) {
     var songs = data.songs;
     history.pushState(songs, document.title, '?' + serialized);
     printTable(songs);
+    try {
+      ga('set', 'location', window.location.href);
+      ga('send', 'pageview');
+    } catch(e) {
+      console.debug('Failed to send info to google analytics');
+    }
   });
   event.preventDefault();
 }
