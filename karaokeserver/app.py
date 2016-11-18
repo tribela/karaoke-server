@@ -1,10 +1,14 @@
 import datetime
 import os
 from collections import defaultdict
+
 from flask import Flask, g, jsonify, render_template, request
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
 from . import database
 
 app = Flask(__name__)
+db_session = None
 
 
 def serialize(obj):
@@ -32,24 +36,20 @@ def serialize_anime_song(song):
 
 @app.before_first_request
 def initialize():
-    app.config['DB_URI'] = app.config.get('DB_URI', None) or \
-            os.getenv('DATABASE_URL')
-    database.init_db(app.config['DB_URI'])
-
-
-@app.before_request
-def before_request():
-    g.db_session = database.get_session(app.config['DB_URI'])
+    global db_session
+    db_uri = os.getenv('DATABASE_URL')
+    db_session = database.get_session(db_uri)
 
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
-    g.db_session.remove()
+    global db_session
+    db_session.remove()
 
 
 @app.route('/')
 def index():
-    vendors = database.get_all_vendors(g.db_session)
+    vendors = database.get_all_vendors(db_session)
     return render_template('index.html', vendors=vendors)
 
 
@@ -59,12 +59,12 @@ def songs():
     query = request.args.get('query')
 
     if vendor != 'ALL':
-        vendor = database.get_vendor(g.db_session, vendor)
+        vendor = database.get_vendor(db_session, vendor)
     else:
         vendor = None
 
     songs = database.get_songs(
-        g.db_session,
+        db_session,
         vendor=vendor,
         query_str=query,
         limit=100)
@@ -76,7 +76,7 @@ def songs():
 
 @app.route('/anisongs/', methods=['GET'])
 def animation_songs():
-    songs = g.db_session.query(database.SpecialIndex).order_by(
+    songs = db_session.query(database.SpecialIndex).order_by(
         database.SpecialIndex.division).all()
     dic = defaultdict(list)
 
@@ -90,7 +90,7 @@ def animation_songs():
 
 @app.route('/special_songs/', methods=['GET'])
 def special_songs():
-    songs = g.db_session.query(database.SpecialIndex).all()
+    songs = db_session.query(database.SpecialIndex).all()
     dic = defaultdict(list)
 
     for song in songs:
@@ -102,14 +102,14 @@ def special_songs():
 @app.route('/info')
 def info():
     return jsonify({
-        'last_updated': serialize(database.get_last_updated(g.db_session)),
+        'last_updated': serialize(database.get_last_updated(db_session)),
     })
 
 
 @app.route('/get_update/<after>/')
 def get_update(after):
-    songs = database.get_songs(g.db_session, after=after)
-    updated = database.get_last_updated(g.db_session)
+    songs = database.get_songs(db_session, after=after)
+    updated = database.get_last_updated(db_session)
 
     return jsonify({
         'songs': [serialize(song) for song in songs],

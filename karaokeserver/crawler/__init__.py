@@ -5,7 +5,6 @@ from .. import database
 
 
 def crawl(db_url, target=None, new=False):
-    database.init_db(db_url)
     session = database.get_session(db_url)
 
     try:
@@ -26,7 +25,6 @@ def crawl(db_url, target=None, new=False):
 
 
 def crawl_special_indices(db_url):
-    database.init_db(db_url)
     session = database.get_session(db_url)
     anisongs = anisong.crawl()
 

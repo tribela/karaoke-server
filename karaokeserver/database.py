@@ -57,18 +57,11 @@ class SpecialIndex(Base):
         self.number_ky = number_ky
 
 
-def init_db(url):
-    engine = create_engine(url)
-    session = scoped_session(
-        sessionmaker(engine, autoflush=True, autocommit=True))
-    Base.metadata.create_all(engine)
-    Base.query = session.query_property()
-
-
 def get_session(url):
         engine = create_engine(url)
-        session = scoped_session(
-            sessionmaker(engine, autoflush=True, autocommit=True))
+        session = scoped_session(sessionmaker(engine))
+        Base.metadata.create_all(engine)
+        Base.query = session.query_property()
         return session
 
 
