@@ -16,6 +16,11 @@
     <tr class="table-divider">
       <th class="mdl-data-table__cell--non-numeric" colspan="3">{{ division }}</th>
     </tr>
+    <tr style="display: none;">
+      <th class="mdl-data-table__cell--non-numeric">Title</th>
+      <th>TJ</th>
+      <th>KY</th>
+    </tr>
     {% for song in songs[division]|sort(attribute='title') %}
     <tr style="display: none;">
       <td class="mdl-data-table__cell--non-numeric">{{ song.title }}</td>
