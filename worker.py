@@ -6,6 +6,7 @@ from karaokeserver.crawler import crawl
 
 DB_URL = os.getenv('DATABASE_URL')
 
+
 def job():
     crawl(DB_URL, new=True)
 

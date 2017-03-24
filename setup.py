@@ -1,5 +1,4 @@
 import os.path
-from pip.req import parse_requirements
 
 try:
     from setuptools import find_packages, setup

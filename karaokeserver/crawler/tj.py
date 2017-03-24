@@ -74,13 +74,13 @@ def crawl(target_month=None, new=False):
     crawling_pipe = queue.Queue()
     results = []
 
-    for _ in xrange(5):
+    for _ in range(5):
         crawling_thread = threading.Thread(
             target=crawl_worker, args=(crawling_pipe, parsing_pipe))
         crawling_thread.setDaemon(True)
         crawling_thread.start()
 
-    for _ in xrange(2):
+    for _ in range(2):
         parsing_thread = threading.Thread(
             target=parse_worker, args=(parsing_pipe, results))
         parsing_thread.setDaemon(True)
@@ -93,8 +93,8 @@ def crawl(target_month=None, new=False):
     elif new:
         crawling_pipe.put((today.year, today.month))
     else:
-        for year in xrange(2009, today.year + 1):
-            for month in xrange(1, 12 + 1):
+        for year in range(2009, today.year + 1):
+            for month in range(1, 12 + 1):
                 crawling_pipe.put((year, month))
 
     crawling_pipe.join()

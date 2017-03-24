@@ -76,7 +76,6 @@ def crawl_game_songs():
             title = tr.find('td[3]').text_content()
             division = tr.find('td[5]').text_content()
 
-
             tj_num = int(tj.group()) if tj else None
             ky_num = int(ky.group()) if ky else None
 

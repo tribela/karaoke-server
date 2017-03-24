@@ -2,9 +2,7 @@ import datetime
 import os
 from collections import defaultdict
 
-from flask import Flask, g, jsonify, render_template, request
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
+from flask import Flask, jsonify, render_template, request
 from . import database
 
 app = Flask(__name__)
@@ -84,8 +82,6 @@ def animation_songs():
         dic[song.division].append(song)
 
     return render_template('anisong.html', songs=dic)
-
-
 
 
 @app.route('/special_songs/', methods=['GET'])

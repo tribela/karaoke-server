@@ -14,6 +14,7 @@ def server_command(args):
     app.debug = args.debug
     app.run(host=args.host, port=args.port)
 
+
 parser = argparse.ArgumentParser(prog='karaokeserver')
 subparsers = parser.add_subparsers(dest='command')
 
