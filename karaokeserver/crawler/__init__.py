@@ -31,12 +31,14 @@ def crawl_special_indices(db_url):
     for song in anisongs:
         orig_song = session.query(database.SpecialIndex).filter_by(
             division=song.division,
-            title=song.title
+            number_ky=song.number_ky,
+            number_tj=song.number_tj
         ).first()
         if orig_song:
             orig_song.number_tj = song.number_tj
             orig_song.number_ky = song.number_ky
+            orig_song.title = song.title
         else:
-            session.add(song)
+            session.merge(song)
 
     session.commit()

@@ -42,7 +42,7 @@ class Song(Base):
 class SpecialIndex(Base):
     __tablename__ = 'special_songs'
     __table_args__ = (
-         UniqueConstraint('division', 'title'),
+         UniqueConstraint('division', 'number_ky', 'number_tj'),
     )
     id = Column(Integer, primary_key=True)
     division = Column(Text, nullable=False)
