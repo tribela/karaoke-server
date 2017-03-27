@@ -49,8 +49,8 @@ def parse_trs(trs):
         except:
             continue
 
-        _title = map(lambda x: x.strip(), title.split('\n'))
-        _singer = map(lambda x: x.strip(), singer.split('\n'))
+        _title = list(map(lambda x: x.strip(), title.split('\n')))
+        _singer = list(map(lambda x: x.strip(), singer.split('\n')))
 
         # If japanese song
         if len(_title) > 1:
