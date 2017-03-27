@@ -28,7 +28,6 @@ def crawl_special_indices(db_url):
     session = database.get_session(db_url)
     anisongs = anisong.crawl()
 
-    session.begin()
     for song in anisongs:
         orig_song = session.query(database.SpecialIndex).filter_by(
             division=song.division,

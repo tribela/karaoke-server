@@ -68,7 +68,6 @@ def get_session(url):
 def get_vendor(session, name, create=False):
     vendor = session.query(Vendor).filter_by(name=name).first()
     if not vendor and create:
-        session.begin()
         vendor = Vendor(name)
         session.add(vendor)
         session.commit()

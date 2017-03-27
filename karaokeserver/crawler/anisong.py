@@ -7,11 +7,11 @@ from lxml import html
 
 from karaokeserver.database import SpecialIndex
 
-ANISONG_URL = ('https://namu.wiki/w/'
-               '%EC%95%A0%EB%8B%88%20%EC%9D%8C%EC%95%85/'
-               '%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9'
-               '%EB%A1%9D/'
-               '%EC%A0%84%EC%B2%B4%EA%B3%A1%20%EC%9D%BC%EB%9E%8C')
+ANISONG_URL = (
+    'https://namu.wiki/w/'
+    '%EC%95%A0%EB%8B%88%EB%A9%94%EC%9D%B4%EC%85%98%20%EC%9D%8C%EC%95%85/'
+    '%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB%A1%9D/'
+    '%EC%A0%84%EC%B2%B4%EA%B3%A1%20%EC%9D%BC%EB%9E%8C')
 VOCALOID_URL = ('https://namu.wiki/w/'
                 'VOCALOID%20%EC%98%A4%EB%A6%AC%EC%A7%80%EB%84%90%20%EA%B3%A1/'
                 '%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9'
@@ -20,7 +20,16 @@ GAME_URL = ('https://namu.wiki/w/'
             '%EA%B2%8C%EC%9E%84%20%EC%9D%8C%EC%95%85/'
             '%EB%85%B8%EB%9E%98%EB%B0%A9%20%EC%88%98%EB%A1%9D%20%EB%AA%A9%EB'
             '%A1%9D')
-pattern_number = re.compile(r'\d+')
+pattern_number = re.compile(r'^\d+')
+
+
+def sanitise_table(table):
+    for br in table.xpath("*//br"):
+        br.tail = "\n" + br.tail if br.tail else "\n"
+    for trash in (
+        table.findall('*//a[@class="wiki-fn-content"]') +
+        table.findall('*//del')):
+        trash.getparent().remove(trash)
 
 
 def crawl_anisong():
@@ -28,6 +37,8 @@ def crawl_anisong():
         division = None
         for br in table.xpath("*//br"):
             br.tail = "\n" + br.tail if br.tail else "\n"
+        sanitise_table(table)
+
         for tr in table.findall('tr')[1:]:
             if tr.find('td').get('colspan'):
                 division = tr.find('td').text_content()
@@ -38,12 +49,17 @@ def crawl_anisong():
                 tj_num = int(tj.group()) if tj else None
                 ky_num = int(ky.group()) if ky else None
 
-                title = tr.find('td[3]').text_content()
+                try:
+                    title = tr.find('td[3]').text_content().replace('\n', '')
+                except AttributeError:
+                    # Rowspan. title = title
+                    pass
 
-                yield SpecialIndex(division, title, tj_num, ky_num)
+                if any((tj_num, ky_num)):
+                    yield SpecialIndex(division, title, tj_num, ky_num)
 
     tree = html.fromstring(requests.get(ANISONG_URL).text)
-    tables = tree.xpath('//table[@class="wiki-table"]')[1:]
+    tables = tree.xpath('//table[@class="wiki-table"]')[2:-1]
     parsed_tables = [parse_table(table) for table in tables]
     results = [elem for parsed in parsed_tables for elem in parsed]
 
@@ -53,18 +69,21 @@ def crawl_anisong():
 def crawl_vocaloid_songs():
     def parse_table(table):
         division = 'Vocaloid'
+        sanitise_table(table)
+
         for tr in table.findall('tr')[1:]:
             tj = pattern_number.match(tr.find('td[1]').text_content())
             ky = pattern_number.match(tr.find('td[2]').text_content())
-            title = tr.find('td[3]').text_content()
+            title = tr.find('td[3]').text_content().replace('\n', '')
 
             tj_num = int(tj.group()) if tj else None
             ky_num = int(ky.group()) if ky else None
 
-            yield SpecialIndex(division, title, tj_num, ky_num)
+            if any((tj_num, ky_num)):
+                yield SpecialIndex(division, title, tj_num, ky_num)
 
     tree = html.fromstring(requests.get(VOCALOID_URL).text)
-    table = tree.xpath('//table[@class="wiki-table"]')[1]
+    table = tree.xpath('//table[@class="wiki-table"]')[3]
     return parse_table(table)
 
 
@@ -73,7 +92,7 @@ def crawl_game_songs():
         for tr in table.findall('tr')[1:]:
             tj = pattern_number.match(tr.find('td[1]').text_content())
             ky = pattern_number.match(tr.find('td[2]').text_content())
-            title = tr.find('td[3]').text_content()
+            title = tr.find('td[3]').text_content().replace('\n', '')
             division = tr.find('td[5]').text_content()
 
             tj_num = int(tj.group()) if tj else None
@@ -98,7 +117,7 @@ def crawl_game_songs():
         return division
 
     tree = html.fromstring(requests.get(GAME_URL).text)
-    table = tree.xpath('//table[@class="wiki-table"]')[0]
+    table = tree.xpath('//table[@class="wiki-table"]')[2]
     return parse_table(table)
 
 
