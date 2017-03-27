@@ -14,3 +14,6 @@ py
 _pytest
 pytest.py
 mock.py
+
+.env
+venv/
