@@ -141,7 +141,6 @@ def add_song(session, song):
 
 def add_songs(session, songs):
     now = datetime.datetime.now()
-    session.begin(subtransactions=True)
     for song in songs:
         song.created = now
         add_song(session, song)
