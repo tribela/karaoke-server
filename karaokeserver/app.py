@@ -4,9 +4,14 @@ from collections import defaultdict
 
 from flask import Flask, jsonify, render_template, request
 from . import database
+from .analytics import track_event
 
 app = Flask(__name__)
 db_session = None
+
+app.config.update({
+    'GA_TRACKING_ID': os.getenv('GA_TRACKING_ID'),
+})
 
 
 def serialize(obj):
@@ -97,6 +102,9 @@ def special_songs():
 
 @app.route('/info')
 def info():
+    track_event(
+        category='Mobile',
+        action='fetch_info')
     return jsonify({
         'last_updated': serialize(database.get_last_updated(db_session)),
     })
@@ -106,6 +114,11 @@ def info():
 def get_update(after):
     songs = database.get_songs(db_session, after=after)
     updated = database.get_last_updated(db_session)
+
+    track_event(
+        category='Mobile',
+        action='get_update',
+        label=after)
 
     return jsonify({
         'songs': [serialize(song) for song in songs],
