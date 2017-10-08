@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+
+"psycopg2" = ">=2.6.2"
+schedule = ">=0.3.2"
+uwsgi = ">=2.0.14"
+"e1839a8" = {path = ".", editable = true}
+
+
+[dev-packages]
+honcho = "*"
+"flake8" = "*"
