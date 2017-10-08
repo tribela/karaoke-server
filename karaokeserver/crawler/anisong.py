@@ -26,9 +26,8 @@ pattern_number = re.compile(r'^\d+')
 def sanitise_table(table):
     for br in table.xpath("*//br"):
         br.tail = "\n" + br.tail if br.tail else "\n"
-    for trash in (
-        table.findall('*//a[@class="wiki-fn-content"]') +
-        table.findall('*//del')):
+    for trash in (table.findall('*//a[@class="wiki-fn-content"]') +
+                  table.findall('*//del')):
         trash.getparent().remove(trash)
 
 
