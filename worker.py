@@ -14,6 +14,8 @@ def job():
 if __name__ == '__main__':
     schedule.every().day.at('00:00').do(job)
 
+    schedule.run_all()
+
     while 1:
         schedule.run_pending()
         time.sleep(10)
