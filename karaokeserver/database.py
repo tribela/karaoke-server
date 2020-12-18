@@ -58,11 +58,11 @@ class SpecialIndex(Base):
 
 
 def get_session(url):
-        engine = create_engine(url)
-        session = scoped_session(sessionmaker(engine))
-        Base.metadata.create_all(engine)
-        Base.query = session.query_property()
-        return session
+    engine = create_engine(url, pool_size=2)
+    session = scoped_session(sessionmaker(engine))
+    Base.metadata.create_all(engine)
+    Base.query = session.query_property()
+    return session
 
 
 def get_vendor(session, name, create=False):
