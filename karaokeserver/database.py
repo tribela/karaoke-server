@@ -58,6 +58,8 @@ class SpecialIndex(Base):
 
 
 def get_session(url):
+    if url.startswith('postgres://'):
+        url = url.replace('postgres://', 'postgresql://', 1)
     engine = create_engine(url, pool_size=2)
     session = scoped_session(sessionmaker(engine))
     Base.metadata.create_all(engine)

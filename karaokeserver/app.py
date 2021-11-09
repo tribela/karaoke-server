@@ -7,7 +7,8 @@ from . import database
 from .analytics import track_event
 
 app = Flask(__name__)
-db_session = None
+db_url = os.environ.get('DATABASE_URL')
+db_session = database.get_session(db_url)
 
 app.config.update({
     'GA_TRACKING_ID': os.getenv('GA_TRACKING_ID'),
@@ -35,19 +36,6 @@ def serialize_anime_song(song):
         'tj': song.number_tj,
         'ky': song.number_ky,
     }
-
-
-@app.before_first_request
-def initialize():
-    global db_session
-    db_uri = os.getenv('DATABASE_URL')
-    db_session = database.get_session(db_uri)
-
-
-@app.teardown_appcontext
-def shutdown_session(exception=None):
-    global db_session
-    db_session.remove()
 
 
 @app.route('/')
