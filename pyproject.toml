@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "karaoke-server"
+version = "0.1.0"
+description = "Database update server for KaraokeBook"
+authors = ["'Jeong Arm' <'kjwonmail@gmail.com'>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+psycopg2 = ">=2.6.2"
+schedule = ">=0.3.2"
+uwsgi = ">=2.0.14"
+Flask = ">=0.10.1"
+SQLAlchemy = ">=0.9.7"
+lxml = ">=3.3.5"
+python-dateutil = ">=2.2"
+requests = ">=2.8.1"
+six = ">=1.7.3"
+
+[tool.poetry.dev-dependencies]
+honcho = "*"
+flake8 = "*"
+
+[tool.poetry.scripts]
+karaoke-server = "karaokeserver.command:main"
+
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

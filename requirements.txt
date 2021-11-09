@@ -1,4 +1,0 @@
-.
-psycopg2>=2.6.2
-schedule>=0.3.2
-uWSGI>=2.0.14

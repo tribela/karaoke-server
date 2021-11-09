@@ -1,0 +1,7 @@
+Procfile.dev
+.git
+.gitignore
+
+.envrc
+.env
+
